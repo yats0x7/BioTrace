@@ -1,9 +1,37 @@
+'use client';
+
 import React from 'react';
-import { Bell, Search, Menu } from 'lucide-react';
+import { Search, Menu, ChevronRight } from 'lucide-react';
 import { ThemeToggle } from '@/components/shared/theme-toggle';
 import { UserNav } from '@/components/shared/user-nav';
+import { usePathname } from 'next/navigation';
+import { NotificationsDropdown } from '@/components/layout/notifications-dropdown';
 
 export function TopHeader() {
+  const pathname = usePathname();
+  const segments = pathname.split('/').filter(Boolean);
+
+  const getBreadcrumbs = () => {
+    if (segments.length === 0) return [];
+    if (segments.length === 1 && segments[0] === 'dashboard') {
+      return ['Dashboard', 'Overview'];
+    }
+    
+    return segments.map((segment) => {
+      // Custom mapping for known routes
+      if (segment.toLowerCase() === 'upload') return 'Upload Sample';
+      if (segment.toLowerCase() === 'map') return 'Interactive Map';
+      
+      // Default formatting: hyphens to spaces and capitalize
+      return segment
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    });
+  };
+
+  const breadcrumbs = getBreadcrumbs();
+
   return (
     <header className="h-16 border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50 sticky top-0 z-40 flex items-center justify-between px-4 md:px-6">
       
@@ -13,10 +41,17 @@ export function TopHeader() {
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </button>
-        <div className="hidden sm:flex text-sm text-muted-foreground">
-          <span>Dashboard</span>
-          <span className="mx-2">/</span>
-          <span className="text-foreground font-medium">Overview</span>
+        <div className="hidden sm:flex items-center text-sm text-muted-foreground">
+          {breadcrumbs.map((crumb, index) => (
+            <React.Fragment key={index}>
+              <span className={index === breadcrumbs.length - 1 ? "text-foreground font-medium" : ""}>
+                {crumb}
+              </span>
+              {index < breadcrumbs.length - 1 && (
+                <span className="mx-2 text-muted-foreground/50">/</span>
+              )}
+            </React.Fragment>
+          ))}
         </div>
       </div>
 
@@ -33,11 +68,7 @@ export function TopHeader() {
         
         <ThemeToggle />
         
-        <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive"></span>
-          <span className="sr-only">Notifications</span>
-        </button>
+        <NotificationsDropdown />
 
         <UserNav />
       </div>
