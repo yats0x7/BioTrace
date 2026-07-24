@@ -1,56 +1,53 @@
 'use client';
 
 import React, { use } from 'react';
-import { PageContainer, DashboardCard } from '@/components/shared/wrappers';
-import { useProject, useJoinProject } from '@/hooks/use-projects';
-import { Loader2, ArrowLeft, Users, Target, Activity, MapPin, CheckCircle2, Globe } from 'lucide-react';
+import { DashboardCard } from '@/components/shared/wrappers';
+import { useProject } from '@/hooks/use-projects';
+import { Loader2, ArrowLeft, Users, Target, Activity, MapPin, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { motion } from 'framer-motion';
-
 import { PROJECT_MOCK_DATA } from '@/lib/mock-data/projects-data';
 
-export default function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default function PublicProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: project, isLoading } = useProject(id);
-  const joinMutation = useJoinProject();
 
   if (isLoading) {
     return (
-      <PageContainer className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </PageContainer>
+      </div>
     );
   }
 
   if (!project) {
     return (
-      <PageContainer>
+      <div className="container py-12 md:py-16">
         <div className="flex flex-col items-center justify-center min-h-[400px]">
           <h2 className="text-2xl font-bold mb-2">Project Not Found</h2>
           <p className="text-muted-foreground mb-6">The project you are looking for does not exist.</p>
           <Link 
-            href="/dashboard/projects"
+            href="/projects"
             className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
           >
             Back to Projects
           </Link>
         </div>
-      </PageContainer>
+      </div>
     );
   }
 
   const progress = Math.min(100, Math.round((project.current_samples / project.target_samples) * 100)) || 0;
   
-  // Use unique data for the specific project, fallback to first if not found (should not happen with our filter)
+  // Use unique data for the specific project, fallback to first
   const mockData = PROJECT_MOCK_DATA[id] || PROJECT_MOCK_DATA['11111111-1111-1111-1111-111111111111'];
 
-
   return (
-    <PageContainer className="max-w-6xl">
-      <div className="mb-4">
+    <div className="container py-8 md:py-12 max-w-6xl">
+      <div className="mb-6">
         <Link 
-          href="/dashboard/projects"
+          href="/projects"
           className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -87,17 +84,12 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
             </div>
             
             <div className="flex-shrink-0">
-              <button
-                onClick={() => joinMutation.mutate(project.id)}
-                disabled={project.is_member || joinMutation.isPending}
-                className={`px-8 py-3 rounded-md font-semibold transition-all w-full md:w-auto shadow-sm flex items-center justify-center gap-2
-                  ${project.is_member 
-                    ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 cursor-default' 
-                    : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
+              <Link
+                href="/login"
+                className="px-8 py-3 rounded-md font-semibold transition-all w-full md:w-auto shadow-sm flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                {joinMutation.isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : 
-                 project.is_member ? <><CheckCircle2 className="h-5 w-5" /> Joined</> : 'Join Project'}
-              </button>
+                Log in to Join
+              </Link>
             </div>
           </div>
         </div>
@@ -217,6 +209,6 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           </DashboardCard>
         </div>
       </div>
-    </PageContainer>
+    </div>
   );
 }

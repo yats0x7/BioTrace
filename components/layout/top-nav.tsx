@@ -7,9 +7,7 @@ export function TopNav() {
     <header className="h-16 border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
       <div className="container h-full flex items-center justify-between">
         <Link href="/" className="font-bold text-xl text-primary flex items-center gap-2">
-          <span className="h-8 w-8 rounded-lg bg-primary text-primary-foreground grid place-items-center text-sm shadow-sm">
-            B
-          </span>
+          <img src="/frog.png" alt="BioTrace Logo" className="h-8 w-8 object-contain rounded-md" />
           BioTrace
         </Link>
         
