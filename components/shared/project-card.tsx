@@ -4,12 +4,18 @@ import { Users, Fingerprint, Globe, MapPin, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { ProjectWithStats } from '@/services/project.service';
 import { formatDistanceToNow } from 'date-fns';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export function ProjectCard({ project }: { project: ProjectWithStats }) {
   const router = useRouter();
+  const pathname = usePathname();
   
   const progress = Math.min(100, Math.round((project.current_samples / project.target_samples) * 100)) || 0;
+
+  const navigateToProject = () => {
+    const basePath = pathname.startsWith('/dashboard') ? '/dashboard/projects' : '/projects';
+    router.push(`${basePath}/${project.id}`);
+  };
 
   return (
     <motion.div
@@ -18,10 +24,13 @@ export function ProjectCard({ project }: { project: ProjectWithStats }) {
     >
       <DashboardCard 
         className="flex flex-col h-full cursor-pointer hover:border-primary/50 transition-colors"
-        onClick={() => router.push(`/dashboard/projects/${project.id}`)}
+        onClick={navigateToProject}
       >
-        <div className="h-32 bg-muted/30 rounded-t-lg -mx-6 -mt-6 mb-4 relative overflow-hidden border-b">
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-primary/5" />
+        <div 
+          className="h-32 bg-muted/30 rounded-t-lg -mx-6 -mt-6 mb-4 relative overflow-hidden border-b bg-cover bg-center"
+          style={{ backgroundImage: `url(${project.image_url})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-black/20 to-transparent" />
           <div className="absolute bottom-3 left-4 flex gap-2">
             <span className="px-2.5 py-1 rounded-full bg-background/90 text-xs font-semibold backdrop-blur-sm shadow-sm border">
               {project.category}

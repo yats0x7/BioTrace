@@ -11,28 +11,10 @@ export interface ProjectWithStats extends Project {
   member_count: number;
   species_count: number;
   is_member: boolean;
+  image_url: string;
 }
 
-const MOCK_STATS: Record<string, any> = {
-  '11111111-1111-1111-1111-111111111111': {
-    category: 'Freshwater',
-    region: 'Global',
-    status: 'Active',
-    target_samples: 1000,
-    current_samples: 347,
-    member_count: 128,
-    species_count: 412,
-  },
-  '22222222-2222-2222-2222-222222222222': {
-    category: 'Urban Ecology',
-    region: 'Worldwide',
-    status: 'Active',
-    target_samples: 500,
-    current_samples: 192,
-    member_count: 64,
-    species_count: 173,
-  }
-};
+import { MOCK_STATS } from '@/lib/mock-data/projects-data';
 
 export class ProjectService {
   private supabase = createClient();
